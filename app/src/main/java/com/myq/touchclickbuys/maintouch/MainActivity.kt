@@ -12,7 +12,11 @@ import com.myq.touchclickbuys.tools.Sharpreferens
 import gr.free.grfastuitils.activitybase.BaseActivity
 import gr.free.grfastuitils.tools.MyToast
 import kotlinx.android.synthetic.main.activity_main.*
-
+/**
+* Create by guorui on 2020/5/21
+* Last update 2020/5/21
+* Description:
+**/
 class MainActivity : BaseActivity(), View.OnClickListener {
     val strName = Build.MODEL + "(" + CommClass.getDeviceUUID() + ")" //手机名称和固定唯一码组成名称
 
