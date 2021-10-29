@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.util.DisplayMetrics;
@@ -136,8 +137,8 @@ public class TouchServiceBuy extends AccessibilityService {
 
     public void recycle(AccessibilityNodeInfo info) {
         if (info.getChildCount() == 0) {
-//            System.out.println(info);
-//            System.out.println(info.getText());
+            System.out.println(info);
+            System.out.println(info.getText());
 
             //京东，找位置
             if (info.getPackageName().equals("com.jingdong.app.mall")) {
@@ -196,6 +197,15 @@ public class TouchServiceBuy extends AccessibilityService {
                 }
             }
         }
+    }
+
+    // 输入框输入，只能修改输入框
+    public void setText(AccessibilityNodeInfo info, String str) {
+        Bundle arguments = new Bundle();
+        arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, str);
+        info.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
+        info.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+
     }
 
     //执行滑动操作
