@@ -21,7 +21,7 @@ import gr.free.grfastuitils.tools.MyToast;
 
 /**
  * Create by guorui on 2020/5/21
- * Last update 2021-10-26 16:08:22
+ * Last update 2021-11-1 14:09:24
  * Description:京东淘宝刷任务
  */
 public class TouchServiceBuy extends AccessibilityService {
@@ -123,9 +123,9 @@ public class TouchServiceBuy extends AccessibilityService {
             i = 0;
             AccessibilityNodeInfo s = getRootInActiveWindow();
             recycle(s);
-            if (s.getPackageName().equals("com.taobao.taobao")) {
-                touchSlow();
-            }
+//            if (s.getPackageName().equals("com.taobao.taobao")) {
+//                touchSlow();
+//            }
 
         }
         handler.postDelayed(runnable, Sharpreferens.getTime());
@@ -141,7 +141,7 @@ public class TouchServiceBuy extends AccessibilityService {
             System.out.println(info.getText());
 
             //京东，找位置
-            if (info.getPackageName().equals("com.jingdong.app.mall")) {
+            if ((info.getPackageName() + "").equals("com.jingdong.app.mall")) {
                 //先判断返回
                 if ((info.getText() + "").contains("恭喜完成") || (info.getText() + "").contains("获得2000汪汪币") || (info.getText() + "").contains("获得3000汪汪币")
                         || (info.getText() + "").contains("获得4000汪汪币") || (info.getText() + "").contains("获得5000汪汪币") || (info.getText() + "").contains("获得7000汪汪币") ||
@@ -172,13 +172,17 @@ public class TouchServiceBuy extends AccessibilityService {
                 //记录上一条留着下次对比是否完成用
                 jdCount = info.getText();
 
-            } else if (info.getPackageName().equals("com.taobao.taobao")) {
+            } else if ((info.getPackageName() + "").equals("com.taobao.taobao")) {
                 ////////淘宝，是找控件
                 if ((info.getContentDescription() + "").contains("任务完成") || (info.getText() + "").contains("任务完成")
                         || (info.getContentDescription() + "").contains("任务已完成") || (info.getText() + "").contains("任务已完成")
                         || (info.getContentDescription() + "").contains("任务已经") || (info.getText() + "").contains("任务已经")
                         || (info.getContentDescription() + "").contains("明天再来吧") || (info.getText() + "").contains("明天再来吧")) {
                     mService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+                }
+                if ((info.getContentDescription() + "").contains("浏览得奖励") || (info.getText() + "").contains("浏览得奖励")) {
+                    //每次执行都滑动
+                    touchSlow();
                 }
                 if ((info.getText() + "").equals("去浏览")) {
                     i++;
@@ -197,6 +201,11 @@ public class TouchServiceBuy extends AccessibilityService {
                 }
             }
         }
+    }
+
+    //当前值是否包含
+    private boolean isContains(CharSequence str, String contain) {
+        return (str + "").contains(contain);
     }
 
     // 输入框输入，只能修改输入框
