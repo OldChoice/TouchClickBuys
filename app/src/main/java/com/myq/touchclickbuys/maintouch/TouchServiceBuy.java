@@ -21,7 +21,7 @@ import gr.free.grfastuitils.tools.MyToast;
 
 /**
  * Create by guorui on 2020/5/21
- * Last update 2021-11-1 14:09:24
+ * Last update 2021-11-1 14:17:41
  * Description:京东淘宝刷任务
  */
 public class TouchServiceBuy extends AccessibilityService {
@@ -121,6 +121,7 @@ public class TouchServiceBuy extends AccessibilityService {
 //            AccessibilityServiceInfo info=getServiceInfo();
 //            info.flags=AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY;
             i = 0;
+            jdCount = "";
             AccessibilityNodeInfo s = getRootInActiveWindow();
             recycle(s);
 //            if (s.getPackageName().equals("com.taobao.taobao")) {
@@ -137,8 +138,8 @@ public class TouchServiceBuy extends AccessibilityService {
 
     public void recycle(AccessibilityNodeInfo info) {
         if (info.getChildCount() == 0) {
-            System.out.println(info);
-            System.out.println(info.getText());
+//            System.out.println(info);
+//            System.out.println(info.getText());
 
             //京东，找位置
             if ((info.getPackageName() + "").equals("com.jingdong.app.mall")) {
@@ -170,7 +171,7 @@ public class TouchServiceBuy extends AccessibilityService {
                     }
                 }
                 //记录上一条留着下次对比是否完成用
-                jdCount = info.getText();
+                jdCount = info.getText() + "";
 
             } else if ((info.getPackageName() + "").equals("com.taobao.taobao")) {
                 ////////淘宝，是找控件

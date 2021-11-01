@@ -20,7 +20,7 @@ public class Sharpreferens {
     }
 
     public static Integer getTime() {
-        return sp.getInt("time", 1000);
+        return sp.getInt("time", 2000);
     }
 
     public static void setTime(Integer time) {
