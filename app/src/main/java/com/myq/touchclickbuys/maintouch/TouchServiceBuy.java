@@ -154,7 +154,8 @@ public class TouchServiceBuy extends AccessibilityService {
                 }
 
                 //不取图片了，取也取不出来有问题，就直接取前面的字符串然后算大概去完成图片的点击位置
-                if ((info.getText() + "").contains("s可得2000汪汪币") || (info.getText() + "").contains("s可得3000汪汪币") || (info.getText() + "").contains("s可得7000汪汪币")) {
+                if ((info.getText() + "").contains("s可得2000汪汪币") || (info.getText() + "").contains("s可得3000汪汪币") || (info.getText() + "").contains("s可得4000汪汪币")
+                        || (info.getText() + "").contains("s可得5000汪汪币")|| (info.getText() + "").contains("s可得7000汪汪币")) {
 //                    System.out.println(info);
 //                    System.out.println(info.getText());
                     String jds = jdCount.toString();
