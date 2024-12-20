@@ -43,7 +43,7 @@ public class BrightActivity extends AppCompatActivity {
             }
         });
 
-
+//        permissionCamera();
         if (TouchServiceBuy.isStart()) {
             //默认
             int screenBrightness = 100;
@@ -56,7 +56,7 @@ public class BrightActivity extends AppCompatActivity {
             }
             Sharpreferens.setLight(screenBrightness);
 //            System.out.println(Sharpreferens.getLight());
-            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 0);
+            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 1);
         } else {
             if (Sharpreferens.getLight() > 0) {
                 Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, Sharpreferens.getLight());

@@ -10,12 +10,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.myq.touchclickbuys.MyApplication;
 import com.myq.touchclickbuys.tools.Sharpreferens;
+
+import java.util.List;
 
 import gr.free.grfastuitils.tools.MyToast;
 
@@ -43,11 +46,33 @@ public class TouchServiceBuy extends AccessibilityService {
 
     //处理挂机自动调节亮度
     private void startBright() {
-        if (Sharpreferens.isLight()) {
-            Intent intent = new Intent(this, BrightActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+//        System.out.println(Sharpreferens.isLight());
+//        if (Sharpreferens.isLight()) {
+//            Intent intent = new Intent(this, BrightActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(intent);
+//        }
+
+        if (isStart()) {
+            //默认
+            int screenBrightness = 100;
+            try {
+                screenBrightness = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+//                System.out.println(screenBrightness);
+            } catch (Exception e) {
+                System.out.println(e.toString());
+                e.printStackTrace();
+            }
+            Sharpreferens.setLight(screenBrightness);
+//            System.out.println(Sharpreferens.getLight());
+            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 1);
+        } else {
+            if (Sharpreferens.getLight() > 0) {
+                Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, Sharpreferens.getLight());
+                Sharpreferens.setLight(0);
+            }
         }
+
     }
 
     //实现辅助功能
@@ -122,11 +147,21 @@ public class TouchServiceBuy extends AccessibilityService {
 //            info.flags=AccessibilityServiceInfo.FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY;
             i = 0;
             jdCount = "";
-            AccessibilityNodeInfo s = getRootInActiveWindow();
-            recycle(s);
+            try {
+                AccessibilityNodeInfo s = getRootInActiveWindow();
+                if (s.getPackageName().equals("com.jd.jrapp")) {
+                    doJdjr();
+                } else {
+                    recycle(s);
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
 //            if (s.getPackageName().equals("com.taobao.taobao")) {
 //                touchSlow();
 //            }
+
 
         }
         handler.postDelayed(runnable, Sharpreferens.getTime());
@@ -155,7 +190,7 @@ public class TouchServiceBuy extends AccessibilityService {
 
                 //不取图片了，取也取不出来有问题，就直接取前面的字符串然后算大概去完成图片的点击位置
                 if ((info.getText() + "").contains("s可得2000汪汪币") || (info.getText() + "").contains("s可得3000汪汪币") || (info.getText() + "").contains("s可得4000汪汪币")
-                        || (info.getText() + "").contains("s可得5000汪汪币")|| (info.getText() + "").contains("s可得7000汪汪币")) {
+                        || (info.getText() + "").contains("s可得5000汪汪币") || (info.getText() + "").contains("s可得7000汪汪币")) {
 //                    System.out.println(info);
 //                    System.out.println(info.getText());
                     String jds = jdCount.toString();
@@ -194,6 +229,9 @@ public class TouchServiceBuy extends AccessibilityService {
                         info.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                     }
                 }
+            } else if ((info.getPackageName() + "").equals("com.jd.jrapp")) {
+
+
             }
 
         } else {
@@ -276,5 +314,83 @@ public class TouchServiceBuy extends AccessibilityService {
         doTouchGesture(0, displayMetrics.heightPixels / 2, displayMetrics.widthPixels / 2, displayMetrics.heightPixels / 2, 200);
     }
 
+    //京东金融
+    private void touchJDJR() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        doTouchGesture(displayMetrics.widthPixels / 2, displayMetrics.heightPixels * 16 / 20, displayMetrics.widthPixels / 2, displayMetrics.heightPixels * 5 / 20, 500);
+    }
+
+    boolean isDetailBack = false;
+
+    //京东金融操作
+    private void doJdjr() {
+        //这个地方要判断到哪一页了然后执行哪一页的逻辑
+        List<AccessibilityNodeInfo> list = getRootInActiveWindow().findAccessibilityNodeInfosByViewId("com.jd.jrapp:id/iv_stock_red");
+        List<AccessibilityNodeInfo> title = getRootInActiveWindow().findAccessibilityNodeInfosByViewId("com.jd.jrapp:id/tv_tab_strip");//顶部全部栏
+        List<AccessibilityNodeInfo> bottom = getRootInActiveWindow().findAccessibilityNodeInfosByViewId("com.jd.jrapp:id/ll_nav_bar");//底部导航栏高度,点击列表时候因为导航栏下面还有列表
+        if (list.size() > 0) {
+            isDetailBack = false;
+            Rect rect = new Rect();
+            list.get(0).getBoundsInScreen(rect);
+            Rect rect1 = new Rect();
+            bottom.get(0).getBoundsInScreen(rect1);
+            if (rect1.top < rect.exactCenterY() + 70) {
+                touchJDJR();
+            } else {
+                doTouchGestureClick(rect.exactCenterX(), rect.exactCenterY());
+            }
+
+        } else if (title.size() > 0) {
+            touchJDJR();
+        }
+
+        List<AccessibilityNodeInfo> detail = getRootInActiveWindow().findAccessibilityNodeInfosByViewId("com.jd.jrapp:id/minchart_view");
+//        System.out.println(detail.size());
+        if (detail.size() > 0) {
+            if (isDetailBack) {
+                touchBack();
+            }
+            Rect rect = new Rect();
+            detail.get(0).getBoundsInScreen(rect);
+            //  System.out.println(rect);
+            try {
+                Thread.sleep(600);
+            } catch (InterruptedException e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+            for (int i = rect.left; i < rect.right; i = i + 50) {
+                for (int j = rect.top; j < rect.bottom - 400; j = j + 60) {
+                    List<AccessibilityNodeInfo> s33 = getRootInActiveWindow().findAccessibilityNodeInfosByViewId("com.jd.jrapp:id/minchart_view");
+                    if (s33.size() == 0) break;
+                    doTouchGestureClick(i, j);
+//                    System.out.println(i + "----" + j);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        System.out.println(e);
+                        e.printStackTrace();
+                    }
+                    //判断循环结束也没跳转就返回
+                    if (i + 50 > rect.right && j + 60 > rect.bottom - 400) {
+                        touchBack();
+                    }
+                }
+            }
+        }
+
+        List<AccessibilityNodeInfo> vMoney = getRootInActiveWindow().findAccessibilityNodeInfosByViewId("com.jd.jrapp:id/web_show_root");
+        if (vMoney.size() > 0) {
+            isDetailBack = true;
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                System.out.println(e);
+                e.printStackTrace();
+            }
+            touchBack();
+        }
+
+    }
 
 }

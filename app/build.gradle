@@ -37,6 +37,7 @@ dependencies {
     implementation 'cn.bingoogolapple:bga-refreshlayout:1.1.7@aar'
     implementation 'io.reactivex.rxjava2:rxjava:2.0.7'
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
+    implementation 'com.yanzhenjie:permission:1.1.2'
 
 
 
